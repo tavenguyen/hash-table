@@ -36,9 +36,14 @@ class ht_hash_table {
             capacity = 0;
             std::cout << "Destructor called!" << std::endl;
         }
-        int hash_function(const std::string& key, int prime) {
-            
-            return 0;
+        int hash_function(const std::string& key, int prime, int m) {
+            long long hash_code = 0;
+            int n = key.size();
+            for(int i = 1; i <= n; i++) {
+                hash_code += (long long)power(prime, n - i) * s[i - 1];
+                hash_code %= (long long)m;
+            }
+            return (int)hash_code;
         }
         // void reserve(int new_capacity)
         // void add_item(const ht_item<T>* const item);
