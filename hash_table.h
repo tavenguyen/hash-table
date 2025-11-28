@@ -1,4 +1,6 @@
 #include <string>
+#include <algorithm>
+#include <cmath>
 
 static const unsigned long prime_list[] = {
     53, 97, 193, 389, 769,
@@ -23,9 +25,13 @@ class ht_hash_table {
         ht_item<T>** items;
         int size;
         int capacity;
+
+        int get_next_prime(int min_capacity) {
+            return *(std::upper_bound(prime_list, prime_list + sizeof(prime_list) / sizeof(prime_list[0]), min_capacity));
+        }
     public:  
         ht_hash_table(int _size) {
-            capacity = _size;
+            capacity = get_next_prime(_size);
             size = 0;
             items = new ht_item<T>* [capacity];
             for(int i = 0; i < capacity; i++) {
@@ -45,15 +51,17 @@ class ht_hash_table {
             capacity = 0;
             std::cout << "Destructor called!" << std::endl;
         }
-        int hash_function(const std::string& key, int prime, int m) {
+        int hash_function(const std::string& key, int prime, int capacity) {
             long long hash_code = 0;
-            int n = key.size();
-            for(int i = 1; i <= n; i++) {
-                hash_code += (long long)power(prime, n - i) * s[i - 1];
-                hash_code %= (long long)m;
+            for(auto c : key) {
+                // Horner's method
+                hash_code = (hash_code * prime + c) % capacity;
             }
             return (int)hash_code;
         }
-        // void reserve(int new_capacity)
-        // void add_item(const ht_item<T>* const item);
+        int get_hash(const std::string& key, int attempt) {
+            int hash_1 = hash_function(key, 31, capacity);
+            int hash_2 = hash_function(key, 53, capacity - 1);
+            return (hash_1 + (long long)attempt * (hash_2 + 1)) % capacity;
+        }
 };
