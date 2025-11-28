@@ -11,11 +11,16 @@ static const unsigned long prime_list[] = {
     1610612741, 3221225473, 4294967291
 };
 
+enum EntryState {EMPTY, OCCUPIED, DELETED};
+
 template <typename T>
 struct ht_item {
     std::string key;
     T value;
-    ht_item(const std::string& _key, const T& _value) : key(_key), value(_value) {}
+    EntryState state;
+
+    ht_item() : state(EMPTY), key("") {}
+    ht_item(const std::string& _key, const T& _value) : state(EMPTY), key(_key), value(_value) {}
     std::string getKey() const {return key;} 
 };
 
@@ -35,7 +40,8 @@ class ht_hash_table {
             size = 0;
             items = new ht_item<T>* [capacity];
             for(int i = 0; i < capacity; i++) {
-                items[i] = nullptr;
+                items[i] = new ht_item<T>;
+                items[i]->state = EMPTY;
             }
             std::cout << "Constructor called!" << std::endl;
         }
