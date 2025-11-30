@@ -83,11 +83,16 @@ ht_item<int>* ht_hash_table<T>::TOMBSTONE = new ht_item("DELETED", 0);
 template<typename T>
 void ht_hash_table<T>::insert(const std::string& key, const T& value) {
     int index = get_hash(key, 0);
+    int first_deleted_index = -1;
     int i = 1;
     ht_item<T>* current_pointer = items[index];
     while(current_pointer != nullptr) {
-        // Đã tồn tại key, cập nhật lại giá trị
-        if(current_pointer->key == key) {
+        if(current_pointer == TOMBSTONE) {
+            if(first_deleted_index == -1) {
+                first_deleted_index = index;
+            }
+        }
+        else if(current_pointer != TOMBSTONE && current_pointer->key == key) {
             current_pointer->value = value;
             return;
         }
@@ -95,8 +100,12 @@ void ht_hash_table<T>::insert(const std::string& key, const T& value) {
         index = get_hash(key, i++);
         current_pointer = items[index];
     }
-    current_pointer = new ht_item(key, value);
-    items[index] = current_pointer;
+    ht_item<T>* new_item = new ht_item(key, value);
+    if(first_deleted_index != -1) {
+        items[first_deleted_index] = new_item;
+    } else {
+        items[index] = new_item;
+    }
     size++;
 }
 
