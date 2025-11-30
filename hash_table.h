@@ -74,7 +74,28 @@ class ht_hash_table {
             int hash_2 = hash_function(key, 53, capacity - 1);
             return (hash_1 + (long long)attempt * (hash_2 + 1)) % capacity;
         }
+        void insert(const std::string& key, const T& value);
 };
 
 template<typename T>
 ht_item<int>* ht_hash_table<T>::TOMBSTONE = new ht_item("DELETED", 0);
+
+template<typename T>
+void ht_hash_table<T>::insert(const std::string& key, const T& value) {
+    int index = get_hash(key, 0);
+    int i = 1;
+    ht_item<T>* current_pointer = items[index];
+    while(current_pointer != nullptr) {
+        // Đã tồn tại key, cập nhật lại giá trị
+        if(current_pointer->key == key) {
+            current_pointer->value = value;
+            return;
+        }
+
+        int next_index = get_hash(key, i);
+        current_pointer = items[next_index];
+        i++;
+    }
+    current_pointer = new ht_item(key, value);
+    size++;
+}
