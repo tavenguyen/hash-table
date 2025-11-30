@@ -17,10 +17,8 @@ template <typename T>
 struct ht_item {
     std::string key;
     T value;
-    EntryState state;
 
-    ht_item() : state(EMPTY), key("") {}
-    ht_item(const std::string& _key, const T& _value) : state(EMPTY), key(_key), value(_value) {}
+    ht_item(const std::string& _key, const T& _value) : key(_key), value(_value) {}
     std::string getKey() const {return key;} 
 };
 
@@ -31,6 +29,7 @@ class ht_hash_table {
         int size;
         int capacity;
 
+        static ht_item<int>* TOMBSTONE;
         int get_next_prime(int min_capacity) {
             return *(std::upper_bound(prime_list, prime_list + sizeof(prime_list) / sizeof(prime_list[0]), min_capacity));
         }
@@ -40,19 +39,24 @@ class ht_hash_table {
             size = 0;
             items = new ht_item<T>* [capacity];
             for(int i = 0; i < capacity; i++) {
-                items[i] = new ht_item<T>;
-                items[i]->state = EMPTY;
+                items[i] = nullptr;
             }
             std::cout << "Constructor called!" << std::endl;
         }
         ~ht_hash_table() {
             for(int i = 0; i < size; i++) {
                 if(items[i] != nullptr) {
+                    // Nếu có nhiều index cùng trỏ vào TOMBSTONE mà ta lại xoá thì nó sẽ gây ra UB.
+                    if(items[i] == TOMBSTONE) {
+                        continue;
+                    }
+
                     delete items[i];
                 }
             }
 
             delete [] items;
+            delete TOMBSTONE;
             size = 0;
             capacity = 0;
             std::cout << "Destructor called!" << std::endl;
@@ -71,3 +75,6 @@ class ht_hash_table {
             return (hash_1 + (long long)attempt * (hash_2 + 1)) % capacity;
         }
 };
+
+template<typename T>
+ht_item<int>* ht_hash_table<T>::TOMBSTONE = new ht_item("DELETED", 0);
