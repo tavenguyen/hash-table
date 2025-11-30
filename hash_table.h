@@ -11,8 +11,6 @@ static const unsigned long prime_list[] = {
     1610612741, 3221225473, 4294967291
 };
 
-enum EntryState {EMPTY, OCCUPIED, DELETED};
-
 template <typename T>
 struct ht_item {
     std::string key;
