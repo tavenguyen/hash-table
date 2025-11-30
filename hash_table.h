@@ -76,6 +76,7 @@ class ht_hash_table {
         }
         void insert(const std::string& key, const T& value);
         int find(const std::string& key);
+        void remove(const std::string& key);
 };
 
 template<typename T>
@@ -119,4 +120,26 @@ int ht_hash_table<T>::find(const std::string& key) {
         current_pointer = items[index];
     }
     return (-1);
+}
+
+template <typename T>
+void ht_hash_table<T>::remove(const std::string& key) {
+    if(size == 0) {
+        return;
+    }
+
+    int index = get_hash(key, 0);
+    int i = 1;
+    ht_item<T>* current_pointer = items[index];
+    while(current_pointer != nullptr) {
+        if(current_pointer->key == key) {
+            delete current_pointer;
+            current_pointer = TOMBSTONE;
+            size--;
+            return;
+        }
+
+        index = get_hash(key, i++);
+        current_pointer = items[index];
+    }
 }
