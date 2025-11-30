@@ -75,6 +75,7 @@ class ht_hash_table {
             return (hash_1 + (long long)attempt * (hash_2 + 1)) % capacity;
         }
         void insert(const std::string& key, const T& value);
+        int find(const std::string& key);
 };
 
 template<typename T>
@@ -92,10 +93,30 @@ void ht_hash_table<T>::insert(const std::string& key, const T& value) {
             return;
         }
 
-        int next_index = get_hash(key, i);
-        current_pointer = items[next_index];
-        i++;
+        index = get_hash(key, i++);
+        current_pointer = items[index];
     }
     current_pointer = new ht_item(key, value);
+    items[index] = current_pointer;
     size++;
+}
+
+template <typename T>
+int ht_hash_table<T>::find(const std::string& key) {
+    if(size == 0) {
+        return (-1);
+    }
+
+    int index = get_hash(key, 0);
+    int i = 1;
+    ht_item<T>* current_pointer = items[index];
+    while(current_pointer != nullptr) {
+        if(current_pointer->key == key) {
+            return index;
+        }
+
+        index = get_hash(key, i++);
+        current_pointer = items[index];
+    }
+    return (-1);
 }
