@@ -139,11 +139,13 @@ void ht_hash_table<T>::remove(const std::string& key) {
     int i = 1;
     ht_item<T>* current_pointer = items[index];
     while(current_pointer != nullptr) {
-        if(current_pointer->key == key) {
-            delete current_pointer;
-            current_pointer = TOMBSTONE;
-            size--;
-            return;
+        if(current_pointer != TOMBSTONE) { 
+            if(current_pointer->key == key) {
+                delete current_pointer;
+                current_pointer = TOMBSTONE;
+                size--;
+                return;
+            }
         }
 
         index = get_hash(key, i++);
