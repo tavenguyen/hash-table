@@ -119,8 +119,10 @@ int ht_hash_table<T>::find(const std::string& key) {
     int i = 1;
     ht_item<T>* current_pointer = items[index];
     while(current_pointer != nullptr) {
-        if(current_pointer->key == key) {
-            return index;
+        if(current_pointer != TOMBSTONE) {
+            if(current_pointer->key == key) {
+                return index;
+            }
         }
 
         index = get_hash(key, i++);
