@@ -145,7 +145,7 @@ void ht_hash_table<T>::remove(const std::string& key) {
         if(current_pointer != TOMBSTONE) { 
             if(current_pointer->key == key) {
                 delete current_pointer;
-                current_pointer = TOMBSTONE;
+                items[index] = TOMBSTONE;
                 size--;
                 return;
             }
