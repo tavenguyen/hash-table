@@ -75,6 +75,7 @@ class ht_hash_table {
         void insert(const std::string& key, const T& value);
         int find(const std::string& key);
         void remove(const std::string& key);
+        T* get(const std::string& key);
 };
 
 template<typename T>
@@ -153,4 +154,18 @@ void ht_hash_table<T>::remove(const std::string& key) {
         index = get_hash(key, i++);
         current_pointer = items[index];
     }
+}
+
+template <typename T>
+T* ht_hash_table<T>::get(const std::string& key) {
+    if(size == 0) {
+        return nullptr;
+    }
+
+    int index = find(key);
+    if(index == -1) {
+        return nullptr;
+    }
+
+    return &(items[index]->value);
 }
