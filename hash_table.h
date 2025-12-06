@@ -72,6 +72,7 @@ class ht_hash_table {
             int hash_2 = hash_function(key, 53, capacity - 1);
             return (hash_1 + (long long)attempt * (hash_2 + 1)) % capacity;
         }
+        bool valid() const {return capacity;} 
         void insert(const std::string& key, const T& value);
         int find(const std::string& key);
         void remove(const std::string& key);
@@ -94,6 +95,7 @@ void ht_hash_table<T>::ht_del_hash_table() {
     delete [] items;
     delete TOMBSTONE;
     size = 0;
+    capacity = 0;
 }
 
 template<typename T>
@@ -101,6 +103,10 @@ ht_item<int>* ht_hash_table<T>::TOMBSTONE = new ht_item("DELETED", 0);
 
 template<typename T>
 void ht_hash_table<T>::insert(const std::string& key, const T& value) {
+    if(!valid()) {
+        std::cerr << "[DEBUG] Invalid hash_table to insert an element!" << std::endl;
+        return;
+    }
     int index = get_hash(key, 0);
     int first_deleted_index = -1;
     int i = 1;
@@ -175,7 +181,7 @@ void ht_hash_table<T>::remove(const std::string& key) {
 }
 
 template <typename T>
-T* ht_hash_table<T>::get(const std::string& key) {
+T* ht_hash_table<T>::get(const std::string& key) {    
     if(size == 0) {
         return nullptr;
     }
