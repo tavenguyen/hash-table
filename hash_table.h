@@ -93,13 +93,10 @@ void ht_hash_table<T>::resize(int _capacity) {
 
         new_ht_table.insert(items[i]->key, items[i]->value);
     }
-    int tmp_capacity = capacity;
-    capacity = new_ht_table.capacity;
-    new_ht_table.capacity = tmp_capacity;
 
-    ht_item<T>** tmp_items = items;
-    items = new_ht_table.items;
-    new_ht_table.items = tmp_items;
+    std::swap(this->items, new_ht_table.items);
+    std::swap(this->capacity, new_ht_table.capacity);
+    std::swap(this->size, new_ht_table.size);
 }
 
 template<typename T>
