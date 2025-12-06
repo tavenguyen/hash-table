@@ -39,7 +39,7 @@ class ht_hash_table {
             for(int i = 0; i < capacity; i++) {
                 items[i] = nullptr;
             }
-            std::cout << "Constructor called!" << std::endl;
+            std::cout << "Constructor called! [capacity: " << capacity << "]" << std::endl; 
         }
         ~ht_hash_table() {
             for(int i = 0; i < size; i++) {
