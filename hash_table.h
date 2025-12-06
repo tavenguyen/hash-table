@@ -42,7 +42,7 @@ class ht_hash_table {
             std::cout << "Constructor called! [capacity: " << capacity << "]" << std::endl; 
         }
         ~ht_hash_table() {
-            for(int i = 0; i < size; i++) {
+            for(int i = 0; i < capacity; i++) {
                 if(items[i] != nullptr) {
                     // Nếu có nhiều index cùng trỏ vào TOMBSTONE mà ta lại xoá thì nó sẽ gây ra UB.
                     if(items[i] == TOMBSTONE) {
@@ -56,9 +56,9 @@ class ht_hash_table {
             delete [] items;
             delete TOMBSTONE;
             size = 0;
-            capacity = 0;
             std::cout << "Destructor called!" << std::endl;
         }
+        void ht_del_hash_table();
         int hash_function(const std::string& key, int prime, int capacity) {
             long long hash_code = 0;
             for(auto c : key) {
@@ -77,6 +77,24 @@ class ht_hash_table {
         void remove(const std::string& key);
         T* get(const std::string& key);
 };
+
+template <typename T>
+void ht_hash_table<T>::ht_del_hash_table() {
+    for(int i = 0; i < size; i++) {
+        if(items[i] != nullptr) {
+            // Nếu có nhiều index cùng trỏ vào TOMBSTONE mà ta lại xoá thì nó sẽ gây ra UB.
+            if(items[i] == TOMBSTONE) {
+                continue;
+            }
+
+            delete items[i];
+        }
+    }
+
+    delete [] items;
+    delete TOMBSTONE;
+    size = 0;
+}
 
 template<typename T>
 ht_item<int>* ht_hash_table<T>::TOMBSTONE = new ht_item("DELETED", 0);
