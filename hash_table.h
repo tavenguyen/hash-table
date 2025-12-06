@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <cmath>
 
+constexpr double LOAD_FACTOR_HASH_TABLE = 0.75;
+
 static const unsigned long prime_list[] = {
     53, 97, 193, 389, 769,
     1543, 3079, 6151, 12289, 24593,
@@ -39,11 +41,11 @@ class ht_hash_table {
             for(int i = 0; i < capacity; i++) {
                 items[i] = nullptr;
             }
-            std::cout << "Constructor called! [capacity: " << capacity << "]" << std::endl; 
+            //std::cout << "Constructor called! [capacity: " << capacity << "]" << std::endl; 
         }
         ~ht_hash_table() {
             ht_del_hash_table();
-            std::cout << "Destructor called!" << std::endl;
+            //std::cout << "Destructor called!" << std::endl;
         }
         void ht_del_hash_table();
         void resize(int _capacity);
@@ -108,6 +110,11 @@ void ht_hash_table<T>::insert(const std::string& key, const T& value) {
         std::cerr << "[DEBUG] Invalid hash_table to insert an element!" << std::endl;
         return;
     }
+    
+    if(float(size) / float(capacity) >= LOAD_FACTOR_HASH_TABLE) {
+        resize(capacity + 1);
+    }
+
     int index = get_hash(key, 0);
     int first_deleted_index = -1;
     int i = 1;
@@ -126,6 +133,7 @@ void ht_hash_table<T>::insert(const std::string& key, const T& value) {
         index = get_hash(key, i++);
         current_pointer = items[index];
     }
+
     ht_item<T>* new_item = new ht_item(key, value);
     if(first_deleted_index != -1) {
         items[first_deleted_index] = new_item;
