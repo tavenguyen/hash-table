@@ -42,23 +42,11 @@ class ht_hash_table {
             std::cout << "Constructor called! [capacity: " << capacity << "]" << std::endl; 
         }
         ~ht_hash_table() {
-            for(int i = 0; i < capacity; i++) {
-                if(items[i] != nullptr) {
-                    // Nếu có nhiều index cùng trỏ vào TOMBSTONE mà ta lại xoá thì nó sẽ gây ra UB.
-                    if(items[i] == TOMBSTONE) {
-                        continue;
-                    }
-
-                    delete items[i];
-                }
-            }
-
-            delete [] items;
-            delete TOMBSTONE;
-            size = 0;
+            ht_del_hash_table();
             std::cout << "Destructor called!" << std::endl;
         }
         void ht_del_hash_table();
+        void resize(int _capacity);
         int hash_function(const std::string& key, int prime, int capacity) {
             long long hash_code = 0;
             for(auto c : key) {
@@ -81,7 +69,7 @@ class ht_hash_table {
 
 template <typename T>
 void ht_hash_table<T>::ht_del_hash_table() {
-    for(int i = 0; i < size; i++) {
+    for(int i = 0; i < capacity; i++) {
         if(items[i] != nullptr) {
             // Nếu có nhiều index cùng trỏ vào TOMBSTONE mà ta lại xoá thì nó sẽ gây ra UB.
             if(items[i] == TOMBSTONE) {
@@ -93,9 +81,25 @@ void ht_hash_table<T>::ht_del_hash_table() {
     }
 
     delete [] items;
-    delete TOMBSTONE;
-    size = 0;
-    capacity = 0;
+}
+
+template <typename T>
+void ht_hash_table<T>::resize(int _capacity) { 
+    ht_hash_table<T> new_ht_table(_capacity);
+    for(int i = 0; i < capacity; i++) {
+        if(items[i] == nullptr || items[i] == TOMBSTONE) {
+            continue;
+        }
+
+        new_ht_table.insert(items[i]->key, items[i]->value);
+    }
+    int tmp_capacity = capacity;
+    capacity = new_ht_table.capacity;
+    new_ht_table.capacity = tmp_capacity;
+
+    ht_item<T>** tmp_items = items;
+    items = new_ht_table.items;
+    new_ht_table.items = tmp_items;
 }
 
 template<typename T>
